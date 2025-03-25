@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>持ち物依頼リスト</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+</head>
+<body class="flex justify-center items-center min-h-screen bg-gray-100">
+    <div id="root"></div>
+    <script type="text/babel">
+        function ToDoApp() {
+            const [items, setItems] = React.useState([]);
+            const [completedItems, setCompletedItems] = React.useState([]);
+            const [input, setInput] = React.useState("");
+            const [editIndex, setEditIndex] = React.useState(null);
+            const [editText, setEditText] = React.useState("");
+
+            const addItem = () => {
+                if (input.trim() === "") return;
+                const now = new Date();
+                const jstTime = now.toLocaleString('ja-JP');
+                setItems([...items, { text: input, time: jstTime }]);
+                setInput("");
+            };
+
+            const deleteItem = (index) => {
+                setItems(items.filter((_, i) => i !== index));
+            };
+
+            const toggleComplete = (index) => {
+                const now = new Date();
+                const completedTime = now.toLocaleString('ja-JP');
+                const completedItem = { ...items[index], completedTime };
+                setCompletedItems([...completedItems, completedItem]);
+                setItems(items.filter((_, i) => i !== index));
+            };
+
+            return (
+                <div className="bg-white p-6 rounded-2xl shadow-lg w-96">
+                    <h1 className="text-2xl font-bold text-center mb-4">持ち物依頼リスト</h1>
+                    <div className="flex space-x-2">
+                        <input 
+                            type="text" 
+                            className="flex-1 p-2 border rounded-lg" 
+                            placeholder="持ち物を入力..."
+                            value={input}
+                            onChange={(e) => setInput(e.target.value)}
+                        />
+                        <button 
+                            className="bg-blue-500 text-white px-4 py-2 rounded-lg"
+                            onClick={addItem}
+                        >追加</button>
+                    </div>
+                    <ul className="mt-4 space-y-2">
+                        {items.map((item, index) => (
+                            <li key={index} className="p-2 border rounded-lg flex justify-between">
+                                <button className="text-red-500" onClick={() => deleteItem(index)}>削除</button>
+                                <input type="checkbox" onChange={() => toggleComplete(index)} />
+                                <p>{item.text}</p>
+                            </li>
+                        ))}
+                    </ul>
+                    <h2 className="mt-6 text-xl font-bold">完了した依頼</h2>
+                    <ul className="mt-2 space-y-2">
+                        {completedItems.map((item, index) => (
+                            <li key={index} className="p-2 border rounded-lg bg-gray-100">
+                                <p>{item.text}</p>
+                                <div className="text-xs text-gray-400">完了日時: {item.completedTime}</div>
+                            </li>
+                        ))}
+                    </ul>
+                </div>
+            );
+        }
+        ReactDOM.createRoot(document.getElementById("root")).render(<ToDoApp />);
+    </script>
+</body>
+</html>
